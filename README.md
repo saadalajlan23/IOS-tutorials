@@ -12,7 +12,7 @@ This is where we come into picture. we will provide:-
 
 2) All source code will be free.
 
-3) step by step guide for each tutorial at guruofgadget.wordpress.com
+3) step by step guide for each tutorial at OneStopiOS.com
 
 4) videos and new tutorials added every week.
 

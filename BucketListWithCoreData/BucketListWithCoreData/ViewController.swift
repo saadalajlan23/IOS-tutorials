@@ -26,9 +26,16 @@ class ViewController: UIViewController {
         readItem()
     }
     
+    //MARK: - Get updated context, to avoid having global object for your context
     func getUpdatedContext() -> NSManagedObjectContext? {
         let delegate = UIApplication.shared.delegate as! AppDelegate
         return delegate.persistentContainer.viewContext
+    }
+    
+    @IBAction func AddItem(_ sender: UIButton) {
+        if let task = myTextField.text {
+            addItem(name: task)
+        }
     }
     
     @IBAction func updateAction(_ sender: UIButton) {
@@ -39,29 +46,14 @@ class ViewController: UIViewController {
         delete()
     }
     
-    func addSampleItem() {
-        guard let context = getUpdatedContext() else {
-            return
-        }
-        
-        let item = TaskListItem.init(context: context)
-        item.name = "ashish"
-        item.age = Int16(30)
-        
-        do {
-            try context.save()
-            itemList.append(item)
-            myTableView.reloadData()
-        } catch {
-            print("Error: \(error)")
-        }
-    }
-    
+    //MARK: - Add items to data base
     func addItem(name:String) {
         guard let context = getUpdatedContext() else {
             return
         }
         
+        // Add age values for given name
+        // Just to have an entity with multiple attributes
         let item = TaskListItem.init(context: context)
         item.name = name
         if name == "ashish" {
@@ -81,6 +73,7 @@ class ViewController: UIViewController {
         }
     }
     
+    //MARK: - Read items from data base
     func readItem() {
         guard let context = getUpdatedContext() else {
             return
@@ -137,12 +130,11 @@ class ViewController: UIViewController {
         
         request.predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates: [predicate1, predicate2])
         do {
-            let result = try context.fetch(request)
-            let taskListFiltered = result as! [TaskListItem]
+            // update the 1st item matching the criteria
+            let result = try context.fetch(request).first
+            let taskListItem = result as! TaskListItem
+            taskListItem.name = "ashish 2"
             
-            for item in taskListFiltered {
-                item.name = "ashish 2"
-            }
             try context.save()
             readItem()
             
@@ -151,13 +143,14 @@ class ViewController: UIViewController {
         }
     }
     
+    //MARK: - Delete object for a given value
     func delete() {
         guard let context = getUpdatedContext() else {
             return
         }
         
         let request = NSFetchRequest<NSFetchRequestResult>.init(entityName: entityName)
-        request.predicate = NSPredicate.init(format: "task = %@", "updated value")
+        request.predicate = NSPredicate.init(format: "task = %@", "ashish")
         
         do {
             let item = try context.fetch(request).first as! TaskListItem
@@ -166,13 +159,6 @@ class ViewController: UIViewController {
             readItem()
         } catch {
             print(error)
-        }
-        
-    }
-
-    @IBAction func AddItem(_ sender: UIButton) {
-        if let task = myTextField.text {
-            addItem(name: task)
         }
     }
     

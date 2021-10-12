@@ -96,7 +96,35 @@ class ViewController: UIViewController {
         }
     }
     
+    //MARK: - Update with single predicate
     func updateItem() {
+        // fetching an item
+        guard let context = getUpdatedContext() else {
+            return
+        }
+        
+        // read
+        let request = NSFetchRequest<NSFetchRequestResult>.init(entityName: entityName)
+        let predicate = NSPredicate.init(format: "name = %@", "ashish")
+        
+        request.predicate = predicate
+        do {
+            let result = try context.fetch(request)
+            let taskListFiltered = result as! [TaskListItem]
+            
+            for item in taskListFiltered {
+                item.name = "ashish 2"
+            }
+            try context.save()
+            readItem()
+            
+        } catch {
+            print("Fetch Error:\(error)")
+        }
+    }
+    
+    //MARK: - Update with Multiple predicate
+    func updateItemWithMultiplePredicates() {
         // fetching an item
         guard let context = getUpdatedContext() else {
             return
